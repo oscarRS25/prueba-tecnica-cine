@@ -18,7 +18,7 @@ public class Screening {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@NotBlank(message = "Date is required")
+	@NotNull(message = "Date is required")
 	private LocalDate date;
 	
 	@NotNull(message = "Time is required")

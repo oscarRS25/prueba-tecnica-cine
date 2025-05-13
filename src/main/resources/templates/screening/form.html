@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${screening.id == null ? 'Nueva Función' : 'Editar Función'} + ' | Sistema de Gestión'"></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/form.css">
+</head>
+<body>
+    
+	<!-- Content -->
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <!-- Tarjeta del formulario -->
+                <div class="card card-custom-form shadow-lg">
+                    <div class="header-gradient-form">
+                        <h2 class="mb-0 text-center text-white">
+                            <i class="bi bi-calendar-event me-2"></i>
+                            <span th:text="${screening.id == null ? 'Crear Nueva Función' : 'Editar Función'}"></span>
+                        </h2>
+                    </div>
+                    
+                    <div class="card-body p-4 p-md-5">
+                        <form th:action="@{/screening/api}" th:object="${screening}" method="post">
+                            <input type="hidden" th:field="*{id}"/>
+                            <input type="hidden" th:field="*{cinema.id}"/>
+                            
+							<!-- Cinema -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Cine</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light">
+                                        <i class="bi bi-building text-primary"></i>
+                                    </span>
+                                    <input type="text" class="form-control form-control-lg bg-light" 
+                                           th:value="${screening.cinema.name}" readonly>
+                                </div>
+                            </div>
+							
+                            <!-- Movie Select -->
+                            <div class="mb-4">
+                                <label for="movie" class="form-label fw-bold">Película</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light">
+                                        <i class="bi bi-film text-primary"></i>
+                                    </span>
+                                    <select id="movie" th:field="*{movie}" class="form-select form-control-lg" required>
+                                        <option value="">Seleccione una película</option>
+                                        <option th:each="movie : ${movies}" 
+                                                th:value="${movie.id}" 
+                                                th:text="${movie.title}"
+                                                th:selected="${screening.movie != null && screening.movie.id == movie.id}">
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="text-danger mt-1" th:if="${#fields.hasErrors('movie')}" th:errors="*{movie}"></div>
+                            </div>
+                            
+                            <!-- Date Field -->
+							<div class="mb-4">
+							    <label for="date" class="form-label fw-bold">Fecha</label>
+							    <div class="input-group">
+							        <span class="input-group-text bg-light">
+							            <i class="bi bi-calendar-date text-primary"></i>
+							        </span>
+							        <input type="date" id="date" 
+							               th:value="${screening.date != null} ? ${#temporals.format(screening.date, 'yyyy-MM-dd')} : ''"
+							               name="date" 
+							               class="form-control form-control-lg" required>
+							    </div>
+							    <div class="text-danger mt-1" th:if="${#fields.hasErrors('date')}" th:errors="*{date}"></div>
+							</div>
+                            
+                            <!-- Hour Field -->
+                            <div class="mb-4">
+                                <label for="time" class="form-label fw-bold">Hora</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light">
+                                        <i class="bi bi-clock text-primary"></i>
+                                    </span>
+                                    <input type="time" id="time" th:field="*{time}" 
+                                           class="form-control form-control-lg" required>
+                                </div>
+                                <div class="text-danger mt-1" th:if="${#fields.hasErrors('time')}" th:errors="*{time}"></div>
+                            </div>
+                            
+                            <!-- Room Field -->
+                            <div class="mb-4">
+                                <label for="room" class="form-label fw-bold">Sala</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light">
+                                        <i class="bi bi-door-open text-primary"></i>
+                                    </span>
+                                    <input type="text" id="room" th:field="*{room}" 
+                                           class="form-control form-control-lg" 
+                                           placeholder="Ingrese el número de sala" required>
+                                </div>
+                                <div class="text-danger mt-1" th:if="${#fields.hasErrors('room')}" th:errors="*{room}"></div>
+                            </div>
+                            
+                            <!-- Acction Buttons -->
+                            <div class="d-grid gap-3 mt-5">
+                                <button type="submit" class="btn btn-primary-custom btn-lg py-3 fw-bold">
+                                    <i class="bi bi-save me-2"></i>
+                                    <span th:text="${screening.id == null ? 'Crear Función' : 'Guardar Cambios'}"></span>
+                                </button>
+                                <a th:href="@{/screening/} + ${screening.cinema.id}" class="btn btn-outline-secondary btn-lg py-3">
+                                    <i class="bi bi-arrow-left me-2"></i>Volver a la lista
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

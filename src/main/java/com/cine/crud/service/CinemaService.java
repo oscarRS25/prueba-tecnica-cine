@@ -10,9 +10,7 @@ public interface CinemaService {
 	
 	Cinema getCinemaById(Long id);
 	
-	Cinema createCinema(Cinema cinema);
-	
-	Cinema updateCinema(Long id, Cinema cinema);
+	Cinema saveCinema(Cinema cinema);
 	
 	void deleteCinema(Long id);
 }

@@ -1,61 +1,96 @@
 package com.cine.crud.controller;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.cine.crud.entity.Cinema;
 import com.cine.crud.entity.Screening;
+import com.cine.crud.service.CinemaService;
+import com.cine.crud.service.MovieService;
 import com.cine.crud.service.ScreeningService;
 
 import jakarta.validation.Valid;
 
-@RestController
+@Controller
 @RequestMapping("/screening")
 public class ScreeningController {
 
 	@Autowired
 	private ScreeningService screeningService;
 	
-	@GetMapping
-	public List<Screening> getAllScreenings(){
-		return screeningService.getAllScreening();
+	@Autowired
+	private CinemaService cinemaService;
+	
+	@Autowired 
+	private MovieService movieService;
+	
+	@GetMapping("/{cinemaId}")
+	public String getAllScreenings(Model model, @PathVariable Long cinemaId) {
+		List<Screening> screenings = screeningService.getAllScreenings(cinemaId);
+		model.addAttribute("screening", screenings);
+		return "screening/list";
 	}
 	
-	@GetMapping("/{id}")
-	public Screening getScreeningById(@PathVariable Long id) {
-		return screeningService.getScreeningById(id);
+	@GetMapping("/edit/{id}")
+	public String editScreening(@PathVariable Long id, Model model) {
+		Optional<Screening> screening = Optional.ofNullable(screeningService.getScreeningById(id));
+		if(screening.isPresent()) {
+			model.addAttribute("screening", screening.get());
+			model.addAttribute("movies", movieService.getAllMovies());
+			return "screening/form";
+		}else {
+			return "screening/list";
+		}
 	}
 	
-	@GetMapping("/byCinema/{id_cinema}")
-	public List<Screening> getScreeningsByCinema(@PathVariable Long id_cinema) {
-		return screeningService.getScreeningsByCinema(id_cinema);
+	@GetMapping("/new/{cinemaId}")
+	public String createScreening(@PathVariable Long cinemaId, Model model) {
+	    Screening screening = new Screening();
+	    Cinema cinema = cinemaService.getCinemaById(cinemaId);
+	    screening.setCinema(cinema);
+	    
+	    model.addAttribute("screening", screening);
+	    model.addAttribute("movies", movieService.getAllMovies());
+	    model.addAttribute("cinemas", Collections.singletonList(cinema));
+	    return "screening/form";
 	}
 	
-	@PostMapping
-	public Screening registerScreening(@RequestBody @Valid Screening screening) {
-		return screeningService.createScreening(screening);
+	@GetMapping("/api/{cinemaId}")
+	@ResponseBody
+	public List<Screening> getAllScreenings(@PathVariable Long cinemaId){
+		return screeningService.getAllScreenings(cinemaId);
 	}
 	
-	@PutMapping("/{id}")
-	public Screening updateScreening(@PathVariable Long id, @RequestBody @Valid Screening screening) {
-		return screeningService.updateScreening(id, screening);
+	@PostMapping("/api")
+	public String saveScreening(@ModelAttribute @Valid Screening screening) {
+		screeningService.saveScreening(screening);
+		Long cinemaId = screening.getCinema().getId();
+		return "redirect:/screening/" + cinemaId;
+	}
+
+	@PostMapping("/api/toggleState/{id}")
+	@ResponseBody
+	public String toggleScreeningState(@PathVariable Long id) {
+		screeningService.toggleScreeningState(id);
+		return "Estado actualizado con éxito";
 	}
 	
-	@PutMapping("/toggleState/{id}")
-	public boolean toggleScreeningState(@PathVariable Long id) {
-		return screeningService.toggleScreeningState(id);
-	}
-	
-	@DeleteMapping("/{id}")
-	public void deleteScreening(@PathVariable Long id) {
+	@DeleteMapping("/api/{id}")
+	@ResponseBody
+	public String deleteScreening(@PathVariable Long id) {
 		screeningService.deleteScreening(id);
+		return "Función eliminada con éxito";
 	}
 }

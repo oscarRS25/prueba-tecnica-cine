@@ -16,27 +16,18 @@ public class ScreeningServiceImpl implements ScreeningService{
 	private ScreeningRepository screeningRepository;
 	
 	@Override
-	public List<Screening> getAllScreening() {
-		return screeningRepository.findAll();
+	public List<Screening> getAllScreenings(Long cinemaId) {
+		return screeningRepository.getScreeningsByCinema(cinemaId);
 	}
-
+	
 	@Override
 	public Screening getScreeningById(Long id) {
 		return screeningRepository.findById(id).orElse(null);
 	}
 
 	@Override
-	public Screening createScreening(Screening screening) {
+	public Screening saveScreening(Screening screening) {
 		return screeningRepository.save(screening);
-	}
-
-	@Override
-	public Screening updateScreening(Long id, Screening screening) {
-		if(screeningRepository.existsById(id)) {
-			screening.setId(id);
-			return screeningRepository.save(screening);
-		}
-		return null;
 	}
 
 	@Override
@@ -47,11 +38,6 @@ public class ScreeningServiceImpl implements ScreeningService{
 	@Override
 	public boolean toggleScreeningState(Long id) {
 		return screeningRepository.toggleScreeningState(id) > 0;
-	}
-
-	@Override
-	public List<Screening> getScreeningsByCinema(Long id_cinema) {
-		return screeningRepository.getScreeningsByCinema(id_cinema);
 	}
 
 }

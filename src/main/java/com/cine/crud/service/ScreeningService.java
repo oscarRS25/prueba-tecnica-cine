@@ -6,16 +6,12 @@ import com.cine.crud.entity.Screening;
 
 
 public interface ScreeningService {
-
-	List<Screening> getAllScreening();
 	
-	List<Screening>getScreeningsByCinema(Long id_cinema);
+	List<Screening>getAllScreenings(Long cinemaId);
 	
 	Screening getScreeningById(Long id);
 	
-	Screening createScreening(Screening screening);
-	
-	Screening updateScreening(Long id, Screening screening);
+	Screening saveScreening(Screening screening);
 	
 	void deleteScreening(Long id);
 	

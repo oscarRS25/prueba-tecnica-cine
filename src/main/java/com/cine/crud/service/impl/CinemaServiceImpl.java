@@ -26,17 +26,8 @@ public class CinemaServiceImpl implements CinemaService{
 	}
 
 	@Override
-	public Cinema createCinema(Cinema cinema) {
+	public Cinema saveCinema(Cinema cinema) {
 		return cinemaRepository.save(cinema);
-	}
-
-	@Override
-	public Cinema updateCinema(Long id, Cinema cinema) {
-		if(cinemaRepository.existsById(id)) {
-			cinema.setId(id);
-			return cinemaRepository.save(cinema);
-		}
-		return null;
 	}
 
 	@Override
